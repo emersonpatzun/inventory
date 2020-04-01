@@ -2,7 +2,7 @@
     "development": {
       "username": "root",
       "password": "userMangoChango19$",
-      "database": "inv",
+      "database": "prueba",
       "host": "localhost",
       "dialect": "mysql" ,
       "operatorsAliases": 0
