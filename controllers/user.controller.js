@@ -8,8 +8,7 @@ const User = require('../models/System_user');
 
 async function createUser(req, res) {
     let data = req.body;
-    let user = new User();
-
+    
 
     if(data.name && data.lastName && data.userName && data.email &&
         data.password && data.state) {

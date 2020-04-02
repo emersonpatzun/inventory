@@ -60,3 +60,4 @@ module.exports = (sequelize, DataTypes) => {
 
     return systemUser;
 };
+
