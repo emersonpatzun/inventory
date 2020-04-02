@@ -64,10 +64,10 @@ async function login(req,res){
             try {
                 let userFound = await User.findOne({
                     where:{
-                        [Op.or]:[{userName:params.userName},{email:params.email}]
+                        userName:params.userName
                     }
                 });
-                if(!userFound) console.log(userFound);
+                if(!userFound) res.send({mesagge:'Usario o correo incorrecto'});
                 else{
                     BCrypt.compare(params.password,userFound.password,(error,checked)=>{
                         if(error){
