@@ -1,6 +1,6 @@
 module.exports = (sequelize, DataTypes) => {
         const userPoint  = sequelize.define('userPoint', {
-            iduserPoint: {
+            idUserPoint: {
                 type: DataTypes.BIGINT,
                 allowNull: false,
                 primaryKey: true,
@@ -14,9 +14,9 @@ module.exports = (sequelize, DataTypes) => {
         );
 
         userPoint.associate = function(models) {
-            userPoint.belongsTo(models.systemUser, {
-                foreignKey: "idsystemUser",
-                as: "systemUser"
+            userPoint.belongsTo(models.User, {
+                foreignKey: "idUser",
+                as: "user"
             });
         };
         userPoint.associate = function(models) {

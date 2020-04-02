@@ -1,8 +1,8 @@
 {
     "development": {
       "username": "root",
-      "password": "userMangoChango19$",
-      "database": "prueba",
+      "password": "admin",
+      "database": "Inventory",
       "host": "localhost",
       "dialect": "mysql" ,
       "operatorsAliases": 0

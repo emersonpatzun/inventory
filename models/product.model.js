@@ -21,7 +21,12 @@ module.exports = (sequelize, DataTypes) => {
         minium_stock: {
             type: DataTypes.INTEGER,
             allowNull: false
+        },
+        price: {
+            type: DataTypes.DOUBLE,
+            allowNull: false
         }
+
     },
     {
         tableName: 'product', 
@@ -29,12 +34,6 @@ module.exports = (sequelize, DataTypes) => {
     }
     );
 
-    product.associate = function(models) {
-        product.hasMany(models.price, {
-            foreignKey: "idproduct",
-            as: "price"
-        });
-    };
     
     product.associate = function(models) {
         product.hasMany(models.transactionDetail, {

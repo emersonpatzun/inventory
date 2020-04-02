@@ -17,13 +17,6 @@ module.exports = (sequelize, DataTypes) => {
     }
     );
 
-    transaction.associate = function(models) {
-        transaction.belongsTo(models.transactionType, {
-            foreignKey: "idtransactionType",
-            as: "transactionType"
-        });
-    };
-
     transaction.associate  = function(models) {
         transaction.belongsTo(models.pointOfSale, {
             foreignKey: "idpointOfSale",
@@ -32,9 +25,9 @@ module.exports = (sequelize, DataTypes) => {
     };
 
     transaction.associate = function(models) {
-        transaction.belongsTo(models.systemUser, {
-            foreignKey: "idsystemUser",
-            as: "systemUser"
+        transaction.belongsTo(models.User, {
+            foreignKey: "idUser",
+            as: "user"
         });
     };
     

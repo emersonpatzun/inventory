@@ -1,13 +1,15 @@
-const express = require('express');
-const app = express();
+
+const app = require('./app');
 const db = require('./models');
 const PORT = process.env.PORT || 8080;
 
-app.use(express.urlencoded({extended: true}));
-app.use(express.json());
-
 db.sequelize.sync().then(() => {
-    app.listen(PORT, () => {
-        console.log(`listening on: http://localhost:${PORT}`);
-    })
-})
+    console.log(`\u001b[33mConexion con la BD Exitosa`);    
+    app.listen(PORT,(req,res)=>{
+        console.log(`\u001b[33mServidor express levantado en el puerto: ${PORT}`);
+    });
+}).catch((error)=>{
+    console.log('Error',error);
+});
+
+
