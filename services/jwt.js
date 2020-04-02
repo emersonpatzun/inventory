@@ -7,9 +7,7 @@ const key = 'claver super secreta';
 exports.createToken = (systemUser) => {
     var payload = {
         sub:systemUser.idsystemUser,
-        name: systemUser.name, 
-        lastName: systemUser.lastName,
-        email: systemUser.email,
+        userName: systemUser.email,
         password: systemUser.password,
         lat: moment().unix(),
         exp: moment().add(6,'hours').unix()
