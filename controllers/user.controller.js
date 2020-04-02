@@ -6,6 +6,7 @@ const jwt = require('../services/jwt');
 //modeles
 const Models = require('../models');
 const User = Models.User;
+const Transaction = Models.transaction;
 
 async function createUser(req,res){
     let data =  req.body;
@@ -57,7 +58,8 @@ async function createUser(req,res){
 }
 
 async function login(req,res){
-    var params = req.body;
+    let params = req.body;
+    let attempts = 0;
 
     if(params.userName || params.email){
         if(params.password){
@@ -67,7 +69,9 @@ async function login(req,res){
                         userName:params.userName
                     }
                 });
-                if(!userFound) res.send({mesagge:'Usario o correo incorrecto'});
+                if(!userFound){
+                    res.send({mesagge:'Usario o correo incorrecto'});
+                }
                 else{
                     BCrypt.compare(params.password,userFound.password,(error,checked)=>{
                         if(error){
@@ -81,6 +85,8 @@ async function login(req,res){
                            }
                         }else{
                             res.status(401).send({message:'Contraseña incorrecta'});
+                            attempts = attempts++;
+                            console.log(attempts);
                         }
                     });
                 }
@@ -96,7 +102,52 @@ async function login(req,res){
     }
 }
 
+async function deleteAccount(req,res){
+    let id = req.params.id;
+
+    try {
+        let userExists = await User.findById(id);
+
+        if(!userExists) res.status(400).send({message:'ID de usuario incorrecto.'});
+        else{
+           let hasTransactions = await Transaction.findAll({where:{user:id}});
+           if(hasTransactions){
+                await User.update({state:'INACTIVE'},{where:{idUser:id}});
+                res.send({message:'Estado Actualizado'});
+           }else{
+                let userDeleted = await User.destroy({where:{idUser:id}});
+                if(!userDeleted) res.send({message:'No se pudo borrar el usuario'});
+                else{
+                    res.send({message:'Usuario Eliminado'});
+                }
+           }
+        }
+    }catch(err){
+        res.status(500).send('Error interno del servidor');
+        console.log(err);
+    }
+    
+}
+
+async function listUsers(req,res){
+    try {
+        let users = await User.findAll({where:{state:'ACTIVE'}});
+        if(!users) res.send({message:'No se pudo obtener los usuarios'});
+        else{
+            if(users.length == 0) res.send({message:'No hay usuarios disponibles'});
+            else{
+                res.send(users);
+            }
+        }
+    }catch(err){
+        res.status(500).send('Error interno del servidor');
+        console.log(err);
+    }
+}
+
 module.exports = {
     createUser,
-    login
+    login,
+    deleteAccount,
+    listUsers
 }
