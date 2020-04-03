@@ -10,7 +10,7 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.DATE,
             allowNull: false
         },
-        role: {
+        type: {
             type: DataTypes.STRING,
             allowNull: false
         }
