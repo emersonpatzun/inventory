@@ -1,7 +1,7 @@
 
 const Models = require('../models');
 const PointOfSale = Models.pointOfSale;
-
+const Transaction = Models.transaction;
 
 async function createPointOfSale(req,res){
     let data =  req.body;
