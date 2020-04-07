@@ -1,8 +1,13 @@
 'use strcit'
-// modules 
+
+//modules 
 const BCrypt = require('bcrypt-nodejs');
 const {Op}= require('sequelize');
 const jwt = require('../services/jwt');
+
+//constants
+const constants = require('../constants/constants.js');
+
 //modeles
 const Models = require('../models');
 const User = Models.User;
@@ -21,25 +26,25 @@ async function createUser(req,res){
                 }
             });
 
-            if(userExists) res.status(400).send({message:'El usuario ya existe.'});
+            if(userExists) res.status(400).send({message: Response(EXISTING_USER)});
             else{
                 user.name = data.name;
                 user.lastName = data.lastName;
                 user.userName = data.userName;
                 user.email = data.email;
-                user.role = 'USER';
-                user.state = 'ACTIVE';
-                if(data.password.match(blankSpace)) res.send({mesagge:'La contraseña no puede contener espacios.'});
+                user.role = Response(USER);
+                user.state = Response(ACTIVE);
+                if(data.password.match(blankSpace)) res.send({mesagge: Response(PASSWORD_WITHOUT_SPACE)});
                 else{
                     BCrypt.hash(data.password,null,null,async (error,password)=>{
                         if(error){
-                            res.send(500).send({message:'Error de creacion de password.'});
+                            res.send(500).send({message: Response(PASSWORD_CREATION_ERROR)});
                             console.log(error);
                         }else{
                             user.password = password;
                            
                             let userSaved = await User.create(user);
-                            if(!userSaved) res.send({mesagge:'No se pudo crear el usuario'});
+                            if(!userSaved) res.send({mesagge: Response(USER_CREATION_ERROR)});
                             else{
                                 res.send(userSaved);
                             }
@@ -49,11 +54,11 @@ async function createUser(req,res){
                 
             }
         }catch(err){
-            res.status(500).send('Error interno del servidor');
+            res.status(500).send(Response(INTERNAL_ERROR));
             console.log(err);
         }
     }else{
-        res.send({mesagge:"Todos los campos son requeridos"});
+        res.send({mesagge: Response(REQUIRED_FIELDS)});
     }
 }
 
@@ -70,12 +75,12 @@ async function login(req,res){
                     }
                 });
                 if(!userFound){
-                    res.send({mesagge:'Usario o correo incorrecto'});
+                    res.send({mesagge: Response(USER_OR_EMAIL)});
                 }
                 else{
                     BCrypt.compare(params.password,userFound.password,(error,checked)=>{
                         if(error){
-                            res.status(500).send({message:'Error'});
+                            res.status(500).send({message: Response(ERROR)});
                             console.log(error);
                         }else if(checked){
                            if(params.gettoken){
@@ -84,21 +89,21 @@ async function login(req,res){
                                res.send({user:userFound});
                            }
                         }else{
-                            res.status(401).send({message:'Contraseña incorrecta'});
+                            res.status(401).send({message: Response(INCORRECT_DATA)});
                             attempts = attempts++;
                             console.log(attempts);
                         }
                     });
                 }
             }catch(err){
-                res.status(500).send({message:'Error interno del servidor.'});
+                res.status(500).send({message: Response(INTERNAL_ERROR)});
                 console.log(err);
             }
         }else{
-            res.status(400).send({message:'Ingresa la contraseña'});
+            res.status(400).send({message: Response(ENTER_PASSWORD)});
         }
     }else{
-        res.status(400).send({message:'Ingresa el nombre de usuario o correo.'});
+        res.status(400).send({message: Response(USER_OR_EMAIL)});
     }
 }
 
@@ -108,22 +113,22 @@ async function deleteAccount(req,res){
     try {
         let userExists = await User.findById(id);
 
-        if(!userExists) res.status(400).send({message:'ID de usuario incorrecto.'});
+        if(!userExists) res.status(400).send({message: Response(WRONG_ID)});
         else{
            let hasTransactions = await Transaction.findAll({where:{user:id}});
            if(hasTransactions){
-                await User.update({state:'INACTIVE'},{where:{idUser:id}});
-                res.send({message:'Estado Actualizado'});
+                await User.update({state: Response(ACTIVE)},{where:{idUser:id}});
+                res.send({message: Response(UPDATE)});
            }else{
                 let userDeleted = await User.destroy({where:{idUser:id}});
-                if(!userDeleted) res.send({message:'No se pudo borrar el usuario'});
+                if(!userDeleted) res.send({message:Response(CANNOT_DELETE_USER)});
                 else{
-                    res.send({message:'Usuario Eliminado'});
+                    res.send({message: Response(DELETE_USER)});
                 }
            }
         }
     }catch(err){
-        res.status(500).send('Error interno del servidor');
+        res.status(500).send(Response(INTERNAL_ERROR));
         console.log(err);
     }
     
@@ -131,16 +136,16 @@ async function deleteAccount(req,res){
 
 async function listUsers(req,res){
     try {
-        let users = await User.findAll({where:{state:'ACTIVE'}});
-        if(!users) res.send({message:'No se pudo obtener los usuarios'});
+        let users = await User.findAll({where:{state: Response(ACTIVE)}});
+        if(!users) res.send({message: Response(IMPOSSIBLE_TO_OBTAIN_USERS)});
         else{
-            if(users.length == 0) res.send({message:'No hay usuarios disponibles'});
+            if(users.length == 0) res.send({message: Response(USERS_NOT_AVAILABLE)});
             else{
                 res.send(users);
             }
         }
     }catch(err){
-        res.status(500).send('Error interno del servidor');
+        res.status(500).send(Response(INTERNAL_ERROR));
         console.log(err);
     }
 }
