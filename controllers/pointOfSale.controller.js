@@ -2,6 +2,7 @@
 const Models = require('../models');
 const PointOfSale = Models.pointOfSale;
 const Transaction = Models.transaction;
+const Utilities = require('../util/const.util');
 
 async function createPointOfSale(req,res){
     let data =  req.body;
@@ -16,7 +17,7 @@ async function createPointOfSale(req,res){
 
             if(pointOfSaleExists) res.status(400).send({message:'El punto de venta ya existe.'});
             else{
-               let createdPointofSale = await PointOfSale.create({name:data.name,state:'ACTIVE'});
+               let createdPointofSale = await PointOfSale.create({name:data.name,state:Utilities.ACTIVE});
                 if(!createdPointofSale) res.send({message:'No se pudo agregar el punto de venta'});
                 else res.send(createdPointofSale);
             }
@@ -39,7 +40,7 @@ async function deletePointOfSale(req,res){
         else{
            let hasTransactions = await Transaction.findAll({where:{pointOfSale:id}});
            if(hasTransactions){
-                await PointOfSale.update({state:'INACTIVE'},{where:{idpointOfSale:id}});
+                await PointOfSale.update({state:Utilities.INACTIVE},{where:{idpointOfSale:id}});
                 res.send({message:'Estado Actualizado'});
            }else{
                 let pointDeleted = await PointOfSale.destroy({where:{idpointOfSale:id}});
@@ -58,10 +59,10 @@ async function deletePointOfSale(req,res){
 
 async function listPointsOfSale(req,res){
     try {
-        let users = await User.findAll({where:{state:'ACTIVE'}});
+        let users = await User.findAll({where:{state:Utilities.ACTIVE}});
         if(!users) res.send({message:'No se pudo obtener los usuarios'});
         else{
-            if(users.length == 0) res.send({message:'No hay usuarios disponibles'});
+            if(users.length === 0) res.send({message:'No hay usuarios disponibles'});
             else{
                 res.send(users);
             }

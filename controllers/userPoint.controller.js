@@ -49,7 +49,7 @@ async function listUserPoint(req,res){
         let userPoints = await UserPoint.findAll({});
         if(!userPoints) res.status(400).send({message:'No se pudo obtener los userPoint'});
         else{
-            if(userPoints.length == 0) res.send({message:'No hay userPoint que mostrar'});
+            if(userPoints.length === 0) res.send({message:'No hay userPoint que mostrar'});
             else res.send(userPoints);
         }
     }catch(err){
