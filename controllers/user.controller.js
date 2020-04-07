@@ -4,10 +4,7 @@
 const BCrypt = require('bcrypt-nodejs');
 const {Op}= require('sequelize');
 const jwt = require('../services/jwt');
-
-//constants
-const constants = require('../constants/constants.js');
-
+g
 //modeles
 const Models = require('../models');
 const User = Models.User;
