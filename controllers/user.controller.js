@@ -7,10 +7,12 @@ const jwt = require('../services/jwt');
 const Models = require('../models');
 const User = Models.User;
 const Transaction = Models.transaction;
+// utilities
+const Utilities = require("../util/const.util");
 
 async function createUser(req,res){
     let data =  req.body;
-    let blankSpace  = /^.+\s.*$/g;
+    let blankSpace = Utilities.BLANKSPACE;
     let user = {};
 
     if(data.name && data.lastName && data.email && data.password && data.userName){
@@ -27,8 +29,8 @@ async function createUser(req,res){
                 user.lastName = data.lastName;
                 user.userName = data.userName;
                 user.email = data.email;
-                user.role = 'USER';
-                user.state = 'ACTIVE';
+                user.role = Utilities.USER;
+                user.state = Utilities.ACTIVE;
                 if(data.password.match(blankSpace)) res.send({mesagge:'La contraseña no puede contener espacios.'});
                 else{
                     BCrypt.hash(data.password,null,null,async (error,password)=>{
@@ -37,7 +39,6 @@ async function createUser(req,res){
                             console.log(error);
                         }else{
                             user.password = password;
-                           
                             let userSaved = await User.create(user);
                             if(!userSaved) res.send({mesagge:'No se pudo crear el usuario'});
                             else{
@@ -112,7 +113,7 @@ async function deleteAccount(req,res){
         else{
            let hasTransactions = await Transaction.findAll({where:{user:id}});
            if(hasTransactions){
-                await User.update({state:'INACTIVE'},{where:{idUser:id}});
+                await User.update({state:Utilities.INACTIVE},{where:{idUser:id}});
                 res.send({message:'Estado Actualizado'});
            }else{
                 let userDeleted = await User.destroy({where:{idUser:id}});
@@ -131,7 +132,7 @@ async function deleteAccount(req,res){
 
 async function listUsers(req,res){
     try {
-        let users = await User.findAll({where:{state:'ACTIVE'}});
+        let users = await User.findAll({where:{state:Utilities.ACTIVE}});
         if(!users) res.send({message:'No se pudo obtener los usuarios'});
         else{
             if(users.length == 0) res.send({message:'No hay usuarios disponibles'});
