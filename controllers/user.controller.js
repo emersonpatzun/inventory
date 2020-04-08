@@ -147,9 +147,37 @@ async function listUsers(req,res){
     }
 }
 
+async function updateUser(req,res){
+    let id = req.params.id;
+    let data =  req.body;
+    
+    if(data.name || data.lastName || data.email || data.userName){
+        try {
+            let userExists = await User.findOne({
+                where:{
+                    [Op.or]:[{userName:data.userName},{email:data.email}]
+                }
+            });
+
+            if(userExists) res.status(400).send({message: Response(EXISTING_USER)});
+            else{
+                let userUpdated = await User.update(data,{where:{idUser:id}});
+                if(!userUpdated) res.send({mesagge:Response("no se pudo editar el usuario")});
+                else res.send(userUpdated);
+            }
+        }catch(err){
+            res.status(500).send(Response(INTERNAL_ERROR));
+            console.log(err);
+        }
+    }else{
+        res.send({mesagge: Response(REQUIRED_FIELDS)});
+    }
+}
+
 module.exports = {
     createUser,
     login,
     deleteAccount,
-    listUsers
+    listUsers,
+    updateUser
 }
