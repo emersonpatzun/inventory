@@ -55,7 +55,22 @@ async function deletePointOfSale(req,res){
     }
     
 }
-
+async function listPointOfSale(req,res){
+    try {
+        let point = await PointOfSale.findAll({where:{state: Response(ACTIVE)}});
+        if(!point) res.send({message: Response(IMPOSSIBLE_TO_GET_POINTS)});
+        else {
+            if(USER.length == 0) res.send({message: Response(POINT_NOT_AVAILABLE)});
+            else {
+                res.send(users);
+            }
+        } 
+    }catch(err){
+        res.status(500).send(Response(INTERNAL_ERROR));
+        console.log(err);
+    }
+}
+/*
 async function listPointsOfSale(req,res){
     try {
         let users = await User.findAll({where:{state:'ACTIVE'}});
@@ -71,6 +86,7 @@ async function listPointsOfSale(req,res){
         console.log(err);
     }
 }
+*/
 
 async function updatePointOfSale(req,res){
     let id = req.params.id;
@@ -86,7 +102,7 @@ async function updatePointOfSale(req,res){
 
             if(pointExists) res.status(400).send({message: Response(EXISTING_POINT)});
             else {
-                let pointUpdate = await PointOfSale.update(data,{where:{idpointOfSale}});
+                let pointUpdate = await PointOfSale.update(data,{where:{idpointOfSale:id}});
                 if(!pointUpdate) res.send ({message: Response(COULD_NOT_EDIT_POINT)});
                 else res.send(pointUpdate);
             }
@@ -100,7 +116,7 @@ async function updatePointOfSale(req,res){
 }
 
 module.exports = {
-    listPointsOfSale,
+    listPointOfSale,
     createPointOfSale,
     deletePointOfSale,
     updatePointOfSale
