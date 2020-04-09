@@ -72,8 +72,36 @@ async function listPointsOfSale(req,res){
     }
 }
 
+async function updatePointOfSale(req,res){
+    let id = req.params.id;
+    let data = req.body;
+
+    if(data.name || data.state){
+        try {
+            let pointExists = await PointOfSale.findOne({
+                where:{
+                    [Op.or]:[{name:data.name}, {state}]
+                }
+            });
+
+            if(pointExists) res.status(400).send({message: Response(EXISTING_POINT)});
+            else {
+                let pointUpdate = await PointOfSale.update(data,{where:{idpointOfSale}});
+                if(!pointUpdate) res.send ({message: Response(COULD_NOT_EDIT_POINT)});
+                else res.send(pointUpdate);
+            }
+        }catch(err){
+            res.status(500).send(Response(INTERNAL_ERROR));
+            console.log(err);
+        }
+    }else {
+        res.send({message: Response(REQUIRED_FIELDS)});
+    }
+}
+
 module.exports = {
     listPointsOfSale,
     createPointOfSale,
-    deletePointOfSale
+    deletePointOfSale,
+    updatePointOfSale
 }
