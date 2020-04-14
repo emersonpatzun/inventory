@@ -1,13 +1,16 @@
 'use strict'
+
 const express = require('express');
 const api = express.Router();
-const middleAuth = require('../middlewares/autentication');
-const userController = require('../controllers/user.controller');
+const middleAuth = require('../middlewares/authentication');
+const userController = require('../controllers/user.controllers');
 
-api.post('/addUser',userController.createUser);
 api.post('/login',userController.login);
-api.get('/listUsers',middleAuth.ensureAuth,userController.listUsers);
-api.delete('/deleteAccount/:id',middleAuth.ensureAuth,userController.deleteAccount);
-api.put('/updateUser/:id',middleAuth.ensureAuth,userController.updateUser);
+api.post('/users',userController.createUser);
+api.get('/users',middleAuth.ensureAuth,userController.listUsers);
+api.get('/users/:id',middleAuth.ensureAuth,userController.listUsers);
+api.put('/users/:id',middleAuth.ensureAuth,userController.updateUser);
+api.delete('/users/:id',middleAuth.ensureAuth,userController.deleteAccount);
+
 
 module.exports = api;
