@@ -134,7 +134,7 @@ async function deleteAccount(req,res){
            }
         }
     }catch(err){
-        res.status(500).send(Response(INTERNAL_ERROR));
+        res.status(500).send({message:UserMessages.INTERNAL_ERROR});
         console.log(err);
     }
     
@@ -142,16 +142,16 @@ async function deleteAccount(req,res){
 
 async function listUsers(req,res){
     try {
-        let users = await User.findAll({where:{state: Response(ACTIVE)}});
-        if(!users) res.send({message: Response(IMPOSSIBLE_TO_OBTAIN_USERS)});
+        let users = await User.findAll({where:{state: CONSTANTS.ACTIVE}});
+        if(!users) res.send({message: UserMessages.IMPOSSIBLE_TO_OBTAIN_USERS});
         else{
-            if(users.length == 0) res.send({message: Response(USERS_NOT_AVAILABLE)});
+            if(users.length == 0) res.send({message: UserMessages.USERS_NOT_AVAILABLE});
             else{
                 res.send(users);
             }
         }
     }catch(err){
-        res.status(500).send(Response(INTERNAL_ERROR));
+        res.status(500).send({message:UserMessages.INTERNAL_ERROR});
         console.log(err);
     }
 }
@@ -168,18 +168,18 @@ async function updateUser(req,res){
                 }
             });
 
-            if(userExists) res.status(400).send({message: Response(EXISTING_USER)});
+            if(userExists) res.status(400).send({message:UserMessages.EXISTING_USER});
             else{
                 let userUpdated = await User.update(data,{where:{idUser:id}});
-                if(!userUpdated) res.send({mesagge:Response("no se pudo editar el usuario")});
+                if(!userUpdated) res.send({mesagge:UserMessages.COULD_NOT_EDIT_USER});
                 else res.send(userUpdated);
             }
         }catch(err){
-            res.status(500).send(Response(INTERNAL_ERROR));
+            res.status(500).send({message:UserMessages.INTERNAL_ERROR});
             console.log(err);
         }
     }else{
-        res.send({mesagge: Response(REQUIRED_FIELDS)});
+        res.send({mesagge: UserMessages.REQUIRED_FIELDS});
     }
 }
 
