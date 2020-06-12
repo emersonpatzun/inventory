@@ -19,18 +19,18 @@ async function createPointOfSale(req,res) {
                 }
             });
 
-            if(pointOfSaleExists) res.status(400).send({message: Response(EXISTING_POINT)});
+            if(pointOfSaleExists) res.status(400).send({message: messagesEXISTING_POINT});
             else {
-                let createdPointOfSale = await PointOfSale.create({name:data.name,state: Response(ACTIVE)});
+                let createdPointOfSale = await PointOfSale.create({name:data.name,state: constants.ACTIVE});
                 if(!createdPointOfSale) res.send({message: Response(POINT_NOT_ADDED)});
                 else res.send(createdPointOfSale);
             }
         }catch(err){
-            res.status(500).send(Response(INTERNAR_ERROR));
+            res.status(500).send(messages.INTERNAR_ERROR);
             console.log(err);
         }
     }else {
-        res.send({message: Response(REQUIRED_FIELDS)});
+        res.send({message: messages.REQUIRED_FIELDS});
     }
 }
 
@@ -46,18 +46,18 @@ async function updatePointOfSale(req,res){
                 }
             });
 
-            if(pointExists) res.status(400).send({message: Response(EXISTING_POINT)});
+            if(pointExists) res.status(400).send({message: messages.EXISTING_POINT});
             else {
                 let pointUpdate = await PointOfSale.update(data,{where:{idpointOfSale}});
-                if(!pointUpdate) res.send ({message: Response(COULD_NOT_EDIT_POINT)});
+                if(!pointUpdate) res.send ({message: messages.COULD_NOT_EDIT_POINT});
                 else res.send(pointUpdate);
             }
         }catch(err){
-            res.status(500).send(Response(INTERNAR_ERROR));
+            res.status(500).send(messages.INTERNAR_ERROR);
             console.log(err);
         }
     }else {
-        res.send({message: Response(REQUIRED_FIELDS)});
+        res.send({message: messages.REQUIRED_FIELDS});
     }
 }
 
@@ -68,38 +68,38 @@ async function deletePointOfSale(req,res) {
     try {
         let pointExists = await PointOfSale.finById(id);
 
-        if(!pointExists) res.status(400).send({message: Response(WRONG_ID)});
+        if(!pointExists) res.status(400).send({message: messages.WRONG_ID});
         else {
             let hasTransactions = await Transacion.findAll({where:{idpointOfSale:id}});
             if(hasTransactions){
-                await PointOfSale.update({state: Response(INACTIVE)},{where:{idpointOfSale:id}});
-                res.send({message: Response(UPDATE)});
+                await PointOfSale.update({state: constants.INACTIVE},{where:{idpointOfSale:id}});
+                res.send({message: messages.UPDATE});
             }else {
                 let pointDeleted = await PointOfSale.destroy({where:{idpointOfSale:id}});
-                if(!pointDeleted) res.send({message: Response(CANNOT_DELETE_POINT)});
+                if(!pointDeleted) res.send({message: messages.CANNOT_DELETE_POINT});
                 else {
-                    res.send({message: Response(DELETE_POINT)});
+                    res.send({message: messagesDELETE_POINT});
                 }
             }
         }
     }catch(err){
-        res.status(500).send(Response(INTERNAR_ERROR));
+        res.status(500).send(messages.INTERNAR_ERROR);
         console.log(err);
     }
 }
 
 async function listPointOfSale(req,res){
     try {
-        let point = await PointOfSale.findAll({where:{state: Response(ACTIVE)}});
-        if(!point) res.status(400).send({message: Response(IMPOSSIBLE_TO_GET_POINTS)});
+        let point = await PointOfSale.findAll({where:{state: constants.ACTIVE}});
+        if(!point) res.status(400).send({message: messages.IMPOSSIBLE_TO_GET_POINTS});
         else {
-            if(USER.length == 0) res.send({message: Response(POINT_NOT_AVAILABLE)});
+            if(USER.length == 0) res.send({message: messages.POINT_NOT_AVAILABLE});
             else {
                 res.send(users);
             }
         } 
     }catch(err){
-        res.status(500).send(Response(INTERNAR_ERROR));
+        res.status(500).send(messages.INTERNAR_ERROR);
         console.log(err);
     }
 }
