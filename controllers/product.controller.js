@@ -18,7 +18,7 @@ async function createProduct(req,res) {
 
     if (data.name && data.category && data.miniumStock){
         try {
-            let productExists = await Product.findOne({
+            let productExists = await Product.findAll({
                 where:{
                     name:data.name,
                     category:data.category,
@@ -47,7 +47,7 @@ async function updateProduct(req,res) {
 
     if(data.name || data.category || data.miniumStock || state.state){
         try {
-            let productExists = await Product.findOne({
+            let productExists = await Product.findAll({
                 where:{
                     [Op.or]:[{name:data.name},{category:data.category},{miniumStock:data.miniumStock},{state:data.state}]
                 }
