@@ -24,11 +24,12 @@ exports.ensureAuth = (req, res, next) => {
         next();
     }
 }
+
 exports.ensureAuthLogin = (req, res, next) => {
     if(!req.headers.authorization) {
         return res.status(403).send({message: Response(UNAUTHORIZED_REQUEST)});
     } else {
-        var token = req.headers.authorization.replace(/["']+/g,'');
+        var token = req.headers.authorization.replace(/[""]+/g,'');
         try{
             var payload = jwt.decode(token,key);
             if(payload.exp <= moment().unix()){

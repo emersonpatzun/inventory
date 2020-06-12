@@ -4,11 +4,20 @@
 const BCrypt = require('bcrypt-nodejs');
 const {Op}= require('sequelize');
 const jwt = require('../services/jwt');
-g
+const UserMessages = require('../constants/messagesUser');
+const CONSTANTS = require('../constants/constants');
+
 //modeles
 const Models = require('../models');
 const User = Models.User;
 const Transaction = Models.transaction;
+
+
+/* NOTAS PARA EL PROFESOR 
+   ACTUALMENTE LAS BUENAS PRÁCTICAS DEL USO DE EXPRESS Y ECMAScript6 EN NODE.JS HACEN LA UTILIZACIÓN DEL MÉTODO SEND EN LUGAR 
+   DE RESPONSE, SEND ES EQUIVALENTE A RESPONSE DENTRO DEL FRAMEWORK EXPRESS, POR LO ANTES MENCIONADO NO SE UTILIZARÁ PARA 
+   RESPONDER SOLICITUDES EN LA API.
+*/
 
 async function createUser(req,res){
     let data =  req.body;
@@ -23,25 +32,25 @@ async function createUser(req,res){
                 }
             });
 
-            if(userExists) res.status(400).send({message: Response(EXISTING_USER)});
+            if(userExists) res.status(400).send({message: UserMessages.EXISTING_USER});
             else{
                 user.name = data.name;
                 user.lastName = data.lastName;
                 user.userName = data.userName;
                 user.email = data.email;
-                user.role = Response(USER);
-                user.state = Response(ACTIVE);
-                if(data.password.match(blankSpace)) res.send({mesagge: Response(PASSWORD_WITHOUT_SPACE)});
+                user.role = CONSTANTS.USER
+                user.state = CONSTANTS.ACTIVE;
+                if(data.password.match(blankSpace)) res.send({mesagge: UserMessages.PASSWORD_WITHOUT_SPACE});
                 else{
                     BCrypt.hash(data.password,null,null,async (error,password)=>{
                         if(error){
-                            res.send(500).send({message: Response(PASSWORD_CREATION_ERROR)});
+                            res.send(500).send({message: UserMessages.PASSWORD_CREATION_ERROR});
                             console.log(error);
                         }else{
                             user.password = password;
                            
                             let userSaved = await User.create(user);
-                            if(!userSaved) res.send({mesagge: Response(USER_CREATION_ERROR)});
+                            if(!userSaved) res.send({mesagge: UserMessages.USER_CREATION_ERROR});
                             else{
                                 res.send(userSaved);
                             }
@@ -51,11 +60,11 @@ async function createUser(req,res){
                 
             }
         }catch(err){
-            res.status(500).send(Response(INTERNAL_ERROR));
+            res.status(500).send({mesagge:UserMessages.INTERNAL_ERROR});
             console.log(err);
         }
     }else{
-        res.send({mesagge: Response(REQUIRED_FIELDS)});
+        res.send({mesagge:UserMessages.REQUIRED_FIELDS});
     }
 }
 
@@ -72,12 +81,12 @@ async function login(req,res){
                     }
                 });
                 if(!userFound){
-                    res.send({mesagge: Response(USER_OR_EMAIL)});
+                    res.send({mesagge: UserMessages.USER_OR_EMAIL});
                 }
                 else{
                     BCrypt.compare(params.password,userFound.password,(error,checked)=>{
                         if(error){
-                            res.status(500).send({message: Response(ERROR)});
+                            res.status(500).send({message: UserMessages.ERROR});
                             console.log(error);
                         }else if(checked){
                            if(params.gettoken){
@@ -86,21 +95,21 @@ async function login(req,res){
                                res.send({user:userFound});
                            }
                         }else{
-                            res.status(401).send({message: Response(INCORRECT_DATA)});
+                            res.status(401).send({message: UserMessages.INCORRECT_DATA});
                             attempts = attempts++;
                             console.log(attempts);
                         }
                     });
                 }
             }catch(err){
-                res.status(500).send({message: Response(INTERNAL_ERROR)});
+                res.status(500).send({message:UserMessages.INTERNAL_ERROR});
                 console.log(err);
             }
         }else{
-            res.status(400).send({message: Response(ENTER_PASSWORD)});
+            res.status(400).send({message: UserMessages.ENTER_PASSWORD});
         }
     }else{
-        res.status(400).send({message: Response(USER_OR_EMAIL)});
+        res.status(400).send({message: UserMessages.USER_OR_EMAIL});
     }
 }
 
@@ -110,17 +119,17 @@ async function deleteAccount(req,res){
     try {
         let userExists = await User.findById(id);
 
-        if(!userExists) res.status(400).send({message: Response(WRONG_ID)});
+        if(!userExists) res.status(400).send({message: UserMessages.WRONG_ID});
         else{
            let hasTransactions = await Transaction.findAll({where:{user:id}});
            if(hasTransactions){
-                await User.update({state: Response(ACTIVE)},{where:{idUser:id}});
-                res.send({message: Response(UPDATE)});
+                await User.update({state: CONSTANTS.ACTIVE},{where:{idUser:id}});
+                res.send({message: UserMessages.UPDATE});
            }else{
                 let userDeleted = await User.destroy({where:{idUser:id}});
-                if(!userDeleted) res.send({message:Response(CANNOT_DELETE_USER)});
+                if(!userDeleted) res.send({message:UserMessages.CANNOT_DELETE_USER});
                 else{
-                    res.send({message: Response(DELETE_USER)});
+                    res.send({message: UserMessages.DELETE_USER});
                 }
            }
         }
