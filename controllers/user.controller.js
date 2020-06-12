@@ -26,7 +26,7 @@ async function createUser(req,res){
 
     if(data.name && data.lastName && data.email && data.password && data.userName){
         try {
-            let userExists = await User.findOne({
+            let userExists = await User.findAll({
                 where:{
                     [Op.or]:[{userName:data.userName},{email:data.email}]
                 }
@@ -75,7 +75,7 @@ async function login(req,res){
     if(params.userName || params.email){
         if(params.password){
             try {
-                let userFound = await User.findOne({
+                let userFound = await User.findAll({
                     where:{
                         userName:params.userName
                     }
@@ -162,7 +162,7 @@ async function updateUser(req,res){
     
     if(data.name || data.lastName || data.email || data.userName){
         try {
-            let userExists = await User.findOne({
+            let userExists = await User.findAll({
                 where:{
                     [Op.or]:[{userName:data.userName},{email:data.email}]
                 }
