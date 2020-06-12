@@ -7,6 +7,12 @@ const constants = require('../constants/constants');
 //messages
 const messages = require('../constants/messagesProduct');
 
+/* NOTAS PARA EL PROFESOR 
+   ACTUALMENTE LAS BUENAS PRÁCTICAS DEL USO DE EXPRESS Y ECMAScript6 EN NODE.JS HACEN LA UTILIZACIÓN DEL MÉTODO SEND EN LUGAR 
+   DE RESPONSE, SEND ES EQUIVALENTE A RESPONSE DENTRO DEL FRAMEWORK EXPRESS, POR LO ANTES MENCIONADO NO SE UTILIZARÁ PARA 
+   RESPONDER SOLICITUDES EN LA API.
+*/
+
 async function createProduct(req,res) {
     let data = req.body;
 
@@ -20,18 +26,18 @@ async function createProduct(req,res) {
                 }
             });
 
-            if(productExists) res.status(400).send({message: Response(EXISTING_PRODUCT)});
+            if(productExists) res.status(400).send({message: messages.EXISTING_PRODUCT});
             else {
                 let createdProduct = await Product.create({name:data.name, category:data.category, miniumStock:data.miniumStock, state: Response(ACTIVE)});
-                if(!createdProduct) res.send({message: Response(PRODUCT_NOT_ADDED)});
+                if(!createdProduct) res.send({message: messages.PRODUCT_NOT_ADDED});
                 else res.send(createdProduct);
             }
         }catch(err){
-            res.status(500).send(Response(INTERNAR_ERROR));
+            res.status(500).send(messages.INTERNAR_ERROR);
             console.log(err);
         }
     }else {
-        res.send({message: Response(REQUIRED_FIELDS)});
+        res.send({message: messages.REQUIRED_FIELDS});
     }
 }
 
@@ -47,18 +53,18 @@ async function updateProduct(req,res) {
                 }
             });
 
-            if(productExists) res.status(400).send({message: Response(EXISTING_PRODUCT)});
+            if(productExists) res.status(400).send({message:messages.EXISTING_PRODUCT});
             else {
                 let productUpdate = await Product.update(data,{where:{idproduct:id}});
-                if(!productUpdate) res.send({message: Response(COULD_NOT_EDIT_PRODUCT)});
+                if(!productUpdate) res.send({message: messages.COULD_NOT_EDIT_PRODUCT});
                 else res.send(productUpdate);
             }
         }catch(err){
-            res.status(500).send(Response(INTERNAR_ERROR));
+            res.status(500).send(messages.INTERNAR_ERROR);
             console.log(err);
         }
     }else {
-        res.send({message: Response(REQUIRED_FIELDS)});
+        res.send({message: messages.REQUIRED_FIELDS});
     }
 }
 
@@ -68,38 +74,38 @@ async function deleteProduct(req,res) {
     try {
         let productExists = await Product.finById(id);
 
-        if(!productExists) res.status(400).send({message: Response(WRONG_ID)});
+        if(!productExists) res.status(400).send({message: messages.WRONG_ID});
         else {
             let hasTransactions = await Transacion.findAll({where:{idproduct:id}});
             if(hasTransactions){
-                await Product.update({state: Response(INACTIVE)},{where:{idproduct:id}});
-                res.send({message: Response(UPDATE)});
+                await Product.update({state: constants.INACTIVE},{where:{idproduct:id}});
+                res.send({message: messages.UPDATE});
             }else {
                 let productDelete = await Product.destroy({where:{idproduct:id}});
-                if(!productDelete) res.send({message: Response(CANNOT_DELETE_PRODUCT)});
+                if(!productDelete) res.send({message: messages.CANNOT_DELETE_PRODUCT});
                 else {
-                    res.send({message: Response(DELETE_PRODUCT)});
+                    res.send({message: messages.DELETE_PRODUCT});
                 }
             }
         }
     }catch(err){
-        res.status(500).send(Response(INTERNAR_ERROR));
+        res.status(500).send(messages.INTERNAR_ERROR);
         console.log(err);
     }
 }
 
 async function listProduct(req,res) {
     try {
-        let product = await Product.findAll({where:{ state: Response(ACTIVE)}});
-        if(!product) res.status(400).send({message: Response(PRODUCT_NOT_AVAILABLE)});
+        let product = await Product.findAll({where:{ state: constantsACTIVE}});
+        if(!product) res.status(400).send({message: messages.PRODUCT_NOT_AVAILABLE});
         else {
-            if(product.length == 0) res.send({message: PRODUCT_NOT_AVAILABLE});
+            if(product.length == 0) res.send({message: messages.PRODUCT_NOT_AVAILABLE});
             else {
                 res.send(product);
             }
         }
     }catch(err) {
-        res.status(500).send({message: Response(INTERNAL_ERROR)});
+        res.status(500).send({message: messages.INTERNAL_ERROR});
         console.log(err);
     }
 }

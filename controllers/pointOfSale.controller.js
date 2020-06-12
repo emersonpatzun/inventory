@@ -8,6 +8,12 @@ const constants = require('../constants/constants.js');
 //messages
 const messages = require('../constants/messagesPoinOfSale.js');
 
+/* NOTAS PARA EL PROFESOR 
+   ACTUALMENTE LAS BUENAS PRÁCTICAS DEL USO DE EXPRESS Y ECMAScript6 EN NODE.JS HACEN LA UTILIZACIÓN DEL MÉTODO SEND EN LUGAR 
+   DE RESPONSE, SEND ES EQUIVALENTE A RESPONSE DENTRO DEL FRAMEWORK EXPRESS, POR LO ANTES MENCIONADO NO SE UTILIZARÁ PARA 
+   RESPONDER SOLICITUDES EN LA API.
+*/
+
 async function createPointOfSale(req,res) {
     let data = req.body;
 

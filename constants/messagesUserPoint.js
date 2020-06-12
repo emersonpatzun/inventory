@@ -10,8 +10,10 @@ const COULD_NOT_GET_USERPOINT = 'Could not get userPoints';
 const NO_USERPOINT_SEE = 'no user points to show';
 const INTERNAL_ERROR = 'Internal server error';
 const REQUIRED_FIELDS = 'All fields are required';
+const DELETED = "User point deleted";
 
 //exports
+module.exports.DELETED;
 module.exports.WRONG_USER_ID;
 module.exports.WRONG_POINT_ID;
 module.exports.USERPOINT_CREATION_ERROR;
