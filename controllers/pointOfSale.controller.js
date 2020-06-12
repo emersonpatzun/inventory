@@ -19,7 +19,7 @@ async function createPointOfSale(req,res) {
 
     if(data.name){
         try {
-            let pointOfSaleExists = await PointOfSale.findOne({
+            let pointOfSaleExists = await PointOfSale.findAll({
                 where:{
                     name:data.name
                 }
@@ -46,7 +46,7 @@ async function updatePointOfSale(req,res){
 
     if(data.name || data.state){
         try {
-            let pointExists = await PointOfSale.findOne({
+            let pointExists = await PointOfSale.findAll({
                 where:{
                     [Op.or]:[{name:data.name}, {state:data.state}]
                 }
